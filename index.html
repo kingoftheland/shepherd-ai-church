@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shepherd — AI Discipleship Companion for the Local Church</title>
+<meta name="description" content="Shepherd is a free, private AI discipleship companion for the local church: daily devotions, Scripture-grounded AI Q&A with pastor review, prayer lists, serving schedules, and a reading plan. No account, no uploads — your data stays on your device.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="mark">✦ AI for Church 2026 · Discipleship &amp; Spiritual Growth</div>
+  <h1>Shepherd</h1>
+  <p class="tagline">An AI discipleship companion for the local church — daily devotions, honest answers, prayer, and serving, with a pastor always in the loop.</p>
+  <div class="stats" role="status" aria-label="Your progress at a glance">
+    <div class="stat"><b id="stat-streak">0</b><span>Day streak</span></div>
+    <div class="stat"><b id="stat-prayers">0 answered</b><span>Prayers</span></div>
+    <div class="stat"><b id="stat-plan">0 / 7 days</b><span>Reading plan</span></div>
+    <div class="stat"><b id="stat-review">0 pending</b><span>Pastor review</span></div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Main sections">
+  <button data-tab="devotion" class="active">📖 Daily Devotion</button>
+  <button data-tab="ask">💬 Ask Shepherd</button>
+  <button data-tab="prayer">🙏 Prayer List</button>
+  <button data-tab="serving">🤝 Serving</button>
+  <button data-tab="plan">📚 Reading Plan</button>
+  <button data-tab="review">✅ Pastor Review <span class="review-badge" id="review-badge" style="display:none">0</span></button>
+</nav>
+
+<main>
+  <!-- ============ DAILY DEVOTION ============ -->
+  <section id="tab-devotion" class="tab active" aria-label="Daily devotion">
+    <div class="card">
+      <div class="devotion-head">
+        <span class="day-label" id="dev-day-label">Day 1 of 30</span>
+        <span class="devotion-date" id="dev-date"></span>
+      </div>
+      <h2 class="devotion-title" id="dev-title"></h2>
+      <blockquote><span id="dev-verse"></span><br><cite id="dev-ref"></cite></blockquote>
+      <p class="reflection" id="dev-reflection"></p>
+      <div class="journal-box">
+        <strong>🙏 Prayer</strong>
+        <p id="dev-prayer"></p>
+        <strong>✍️ Journal prompt</strong>
+        <p id="dev-journal"></p>
+      </div>
+      <div class="devotion-nav">
+        <button class="btn btn-ghost" id="dev-prev">← Previous day</button>
+        <button class="btn btn-ghost" id="dev-today">Today</button>
+        <button class="btn btn-ghost" id="dev-next">Next day →</button>
+        <button class="btn btn-gold" id="dev-done-btn">Mark as completed</button>
+      </div>
+      <span class="streak-pill" id="dev-streak">0 day streak</span>
+      <p class="lede" style="margin-top:1rem">A new devotion appears each day, drawn from a 30-day cycle of original reflections. Scripture quotations are from the King James Version (public domain).</p>
+    </div>
+  </section>
+
+  <!-- ============ ASK SHEPHERD ============ -->
+  <section id="tab-ask" class="tab" aria-label="Ask Shepherd">
+    <div class="card">
+      <h2>Ask Shepherd <span class="gold">💬</span></h2>
+      <p class="lede">Ask about faith, the Bible, or church life. Answers come from a curated pastoral knowledge base — never invented, always labelled, and always checkable.</p>
+      <label for="ask-input">Your question</label>
+      <input type="text" id="ask-input" placeholder="e.g. How do I forgive someone who hurt me?" autocomplete="off">
+      <div style="margin-top:.75rem"><button class="btn btn-gold" id="ask-submit">Ask Shepherd</button></div>
+      <div class="chips" id="ask-chips" aria-label="Popular topics"></div>
+      <div id="ask-result" aria-live="polite"></div>
+      <div class="privacy-note">⚠️ <strong>Honest AI:</strong> Shepherd answers only from its curated knowledge base and quotes only real KJV verses it contains. It will say <em>“I don't know — please ask your pastor”</em> rather than guess. Every answer is an <strong>AI-generated draft</strong> — verify it with Scripture and your pastor. Flag any answer for pastor review with one tap.</div>
+    </div>
+  </section>
+
+  <!-- ============ PRAYER LIST ============ -->
+  <section id="tab-prayer" class="tab" aria-label="Prayer list">
+    <div class="card">
+      <h2>Prayer List <span class="gold">🙏</span></h2>
+      <p class="lede" id="prayer-count">0 open · 0 answered</p>
+      <div class="privacy-note">🔒 <strong>Private by design:</strong> your prayers are stored only on this device (localStorage) and are never uploaded to any server.</div>
+      <label for="prayer-input">What are you praying for?</label>
+      <textarea id="prayer-input" rows="2" placeholder="e.g. Healing for my grandmother, wisdom for a job decision…"></textarea>
+      <div class="form-row">
+        <div>
+          <label for="prayer-category">Category</label>
+          <select id="prayer-category">
+            <option>Family</option><option>Health</option><option>Work</option>
+            <option>Church</option><option>Personal</option><option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="prayer-filter">Show</label>
+          <select id="prayer-filter">
+            <option value="all">All prayers</option>
+            <option value="open">Open only</option>
+            <option value="answered">Answered only</option>
+          </select>
+        </div>
+        <button class="btn btn-gold" id="prayer-add">Add prayer</button>
+      </div>
+      <ul class="clean" id="prayer-list" style="margin-top:1.25rem"></ul>
+    </div>
+  </section>
+
+  <!-- ============ SERVING SCHEDULE ============ -->
+  <section id="tab-serving" class="tab" aria-label="Serving schedule">
+    <div class="card">
+      <h2>Serving Schedule <span class="gold">🤝</span></h2>
+      <p class="lede">Plan the volunteer rotation for Sunday services. Shepherd spots empty roles each week and suggests a fair rotation.</p>
+      <div class="privacy-note">Demo data is synthetic — sample names only, no real congregant information. Edit or remove anything.</div>
+      <div id="serving-gaps"></div>
+      <p class="suggestion" id="serving-suggestion"></p>
+      <p class="lede" id="serving-reminder"></p>
+      <h3>Volunteers</h3>
+      <ul class="clean" id="serving-list"></ul>
+      <h3>Add a volunteer</h3>
+      <div class="form-row">
+        <div>
+          <label for="serving-name">Name</label>
+          <input type="text" id="serving-name" placeholder="e.g. Grace M.">
+        </div>
+        <div>
+          <label for="serving-role">Role</label>
+          <select id="serving-role">
+            <option>Worship</option><option>Welcome</option><option>Kids</option>
+            <option>Sound</option><option>Prayer</option><option>Communion</option><option>Setup</option>
+          </select>
+        </div>
+        <div>
+          <label for="serving-date">Date</label>
+          <input type="date" id="serving-date">
+        </div>
+        <div>
+          <label for="serving-note">Note (optional)</label>
+          <input type="text" id="serving-note" placeholder="e.g. Lead vocals">
+        </div>
+        <button class="btn btn-gold" id="serving-add">Add volunteer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ READING PLAN ============ -->
+  <section id="tab-plan" class="tab" aria-label="Reading plan">
+    <div class="card">
+      <h2>7-Day Reading Plan <span class="gold">📚</span></h2>
+      <p class="lede">Seven short passages to start — or restart — a daily Bible habit. Check each day off as you read.</p>
+      <div class="progress-track" role="progressbar" aria-label="Reading plan progress"><div class="progress-fill" id="plan-progress"></div></div>
+      <p id="plan-progress-text">0 of 7 days complete</p>
+      <ul class="clean" id="plan-list"></ul>
+    </div>
+  </section>
+
+  <!-- ============ PASTOR REVIEW ============ -->
+  <section id="tab-review" class="tab" aria-label="Pastor review queue">
+    <div class="card">
+      <h2>Pastor Review Queue <span class="gold">✅</span></h2>
+      <p class="lede">The human in the loop. AI answers that a member flags land here. A pastor reviews each one — <strong>approve</strong> it as sound, or <strong>flag</strong> it as a concern with a note. Nothing flagged is treated as trusted until a human approves it.</p>
+      <div class="privacy-note">👤 <strong>Pastor role (demo):</strong> this prototype has no login — the review buttons represent the pastor's role. In a deployed church version, this queue would sit behind a pastor-only login.</div>
+      <div id="review-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Shepherd — AI Discipleship Companion · Built for the AI for Church Hackathon 2026 · Track: Discipleship &amp; Spiritual Growth</p>
+  <p class="ai-note">Built with AI assistance. Scripture quotations: King James Version (public domain). All demo data is synthetic. Your prayers and progress never leave this device.</p>
+  <p>© <span id="year">2026</span> Shepherd · MIT License</p>
+</footer>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
